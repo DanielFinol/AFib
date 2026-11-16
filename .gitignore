@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Data and outputs stay out of git (EDGAR terms: registered users only)
+data/*
+!data/README.md
+runs/
+*.pt
+.edgar-ca-bundle.pem

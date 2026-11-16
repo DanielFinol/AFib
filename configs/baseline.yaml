@@ -1,0 +1,36 @@
+# Baseline experiment: 1D CNN over the 64-lead vest, predicting the driver region.
+seed: 42
+
+data:
+  # "edgar" reads processed arrays from data/processed/; "synthetic" generates toy data.
+  source: synthetic
+  processed_path: data/processed/valencia.npz
+  fs_hz: 500              # sampling rate after preprocessing (check against the raw files)
+  window_s: 2.0           # length of each BSPM window fed to the CNN
+  hop_s: 1.0              # stride between windows within one recording
+  normalize: per_window   # per_window | per_lead | none
+
+split:
+  # Split by simulation (electrogram) id, never by torso: the 10 torso geometries of one
+  # simulation must all land in the same fold, or the model sees the test drivers in training.
+  group_by: simulation_id
+  test_size: 0.2
+  val_size: 0.1
+
+labels:
+  # Driver regions as in Cámara-Vázquez et al. 2021 (Front. Physiol. 12:733449), the baseline.
+  # Adjust to the labels actually present in the Valencia data once inspected.
+  regions: [LA_posterior_wall, LPV, RPV, RAA, RA_free_wall]
+
+model:
+  name: bspm_cnn1d
+  channels: [32, 64, 128]
+  kernel_size: 7
+  dropout: 0.3
+
+train:
+  epochs: 40
+  batch_size: 64
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  out_dir: runs/baseline
